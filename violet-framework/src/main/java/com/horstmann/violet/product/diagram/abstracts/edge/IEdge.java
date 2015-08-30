@@ -142,11 +142,26 @@ public interface IEdge extends Serializable, Cloneable, IIdentifiable
     void draw(Graphics2D g2);
 
     /**
-     * Gets current edge tool tip
-     * 
-     * @return s
+     * Set the resource prefix for this node
+     * @param resourcePrefix
      */
-    String getToolTip();
+    void setResourcePrefix(String resourcePrefix);
+
+    /**
+     * @return the current edge resource prefix
+     */
+    String getResourcePrefix();
+
+    /**
+     * @return the current edge resource bundle name
+     */
+    String getResourceBundleName();
+
+    /**
+     * Set the resource bundle name for this node
+     * @param resourceBundleName
+     */
+    void setResourceBundleName(String resourceBundleName);
 
     /**
      * @return a deep copy of this object

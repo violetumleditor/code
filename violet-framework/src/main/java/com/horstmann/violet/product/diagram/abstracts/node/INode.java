@@ -27,7 +27,6 @@ import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.List;
 
-import com.horstmann.violet.product.diagram.abstracts.Direction;
 import com.horstmann.violet.product.diagram.abstracts.IGraph;
 import com.horstmann.violet.product.diagram.abstracts.IIdentifiable;
 import com.horstmann.violet.product.diagram.abstracts.edge.IEdge;
@@ -173,9 +172,7 @@ public interface INode extends Serializable, Cloneable, IIdentifiable
      */
     void draw(Graphics2D g2);
 
-
     /**
-        
      * Gets the z-order. Nodes with higher z-order are drawn above those with lower z-order.
      * @return the z-order.
      */
@@ -187,12 +184,27 @@ public interface INode extends Serializable, Cloneable, IIdentifiable
      */
     void setZ(int z);
     
+    /**
+     * Set the resource prefix for this node
+     * @param resourcePrefix
+     */
+    void setResourcePrefix(String resourcePrefix);
     
     /**
-     * Gets current node tool tip
-     * @return
+     * @return the current node resource bundle name
      */
-    String getToolTip();
+    String getResourcePrefix();
+
+    /**
+     * Set the resource bundle name for this node
+     * @param resourceBundleName
+     */
+    void setResourceBundleName(String resourceBundleName);
+
+    /**
+     * @return the current node resource bundle name
+     */
+    String getResourceBundleName();
     
     /**
      * @return a deep copy of this object
