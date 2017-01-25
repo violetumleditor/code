@@ -31,6 +31,7 @@ import javax.swing.JMenuItem;
 import com.horstmann.violet.application.gui.MainFrame;
 import com.horstmann.violet.framework.injection.resources.ResourceBundleInjector;
 import com.horstmann.violet.framework.injection.resources.annotation.ResourceBundleBean;
+import com.horstmann.violet.product.diagram.abstracts.node.INode;
 import com.horstmann.violet.workspace.editorpart.IEditorPart;
 import com.horstmann.violet.workspace.editorpart.IEditorPartBehaviorManager;
 import com.horstmann.violet.workspace.editorpart.behavior.CutCopyPasteBehavior;
@@ -38,6 +39,9 @@ import com.horstmann.violet.workspace.editorpart.behavior.EditSelectedBehavior;
 import com.horstmann.violet.workspace.editorpart.behavior.SelectAllBehavior;
 import com.horstmann.violet.workspace.editorpart.behavior.SelectByDistanceBehavior;
 import com.horstmann.violet.workspace.editorpart.behavior.UndoRedoCompoundBehavior;
+import com.seanregan.javaimport.IJavaParseable;
+import com.seanregan.javaimport.ImportClassHandler;
+import java.util.Collection;
 
 /**
  * Edit menu
@@ -230,6 +234,87 @@ public class EditMenu extends JMenu
         });
         this.add(selectPrevious);
 
+		
+		mImportFromFile.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (isThereAnyWorkspaceDisplayed()) {
+					IEditorPart editorPart = getActiveEditorPart();
+					List<INode> selNodes = editorPart.getSelectedNodes();
+					IEditorPartBehaviorManager behaviorManager = editorPart.getBehaviorManager();
+					if (selNodes.size() != 1) {
+						return;
+					}
+
+					//Check if selected node is parseable
+					if (selNodes.get(0) instanceof IJavaParseable) {
+						//Present user with import dialog
+						new ImportClassHandler((IJavaParseable)selNodes.get(0)).show();
+
+						//Force update
+						INode edited = selNodes.get(0);
+						behaviorManager.fireAfterEditingNode(edited);
+						editorPart.getSwingComponent().invalidate();
+					}
+				}
+			}
+		});
+		this.add(mImportFromFile);
+		
+		mRefreshImport.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (isThereAnyWorkspaceDisplayed()) {
+					IEditorPart editorPart = getActiveEditorPart();
+					List<INode> selNodes = editorPart.getSelectedNodes();
+					IEditorPartBehaviorManager behaviorManager = editorPart.getBehaviorManager();
+					if (selNodes.size() != 1) {
+						return;
+					}
+
+					//Check if selected node is parseable
+					if (selNodes.get(0) instanceof IJavaParseable) {
+						INode edited		 = selNodes.get(0);
+						IJavaParseable jEdit = (IJavaParseable)selNodes.get(0);
+
+						//Check if it has a file reference
+						if (jEdit.getFileReference() != null) {
+							//It does so reparse the file
+							jEdit.parseAndPopulate();
+
+							//Force update
+							behaviorManager.fireAfterEditingNode(edited);
+							editorPart.getSwingComponent().invalidate();
+						}
+					}
+				}
+			}
+		});
+		this.add(mRefreshImport);
+		
+		mRefreshAllImports.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (isThereAnyWorkspaceDisplayed()) {
+					IEditorPart editorPart = getActiveEditorPart();
+					IEditorPartBehaviorManager behaviorManager = editorPart.getBehaviorManager();
+
+					//Get all the nodes in the current graph
+					Collection<INode> graphNodes = editorPart.getGraph().getAllNodes();
+					for (INode node : graphNodes) {
+						//Find the parseable nodes
+						if (node instanceof IJavaParseable) {
+							//Reparse their files
+							((IJavaParseable)(node)).parseAndPopulate();
+
+							//Force an update
+							behaviorManager.fireAfterEditingNode(node);
+						}
+					}
+				}
+			}
+		});
+		this.add(mRefreshAllImports);
     }
 
     /**
@@ -280,4 +365,13 @@ public class EditMenu extends JMenu
 
     @ResourceBundleBean(key = "edit.select_previous")
     private JMenuItem selectPrevious;
+	
+    @ResourceBundleBean(key = "edit.file_import")
+    private JMenuItem mImportFromFile;
+	
+    @ResourceBundleBean(key = "edit.refresh_import")
+    private JMenuItem mRefreshImport;
+	
+    @ResourceBundleBean(key = "edit.refresh_all_imports")
+    private JMenuItem mRefreshAllImports;
 }
