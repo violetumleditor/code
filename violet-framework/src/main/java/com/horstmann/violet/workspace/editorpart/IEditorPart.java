@@ -7,6 +7,7 @@ import javax.swing.JComponent;
 import com.horstmann.violet.product.diagram.abstracts.IGraph;
 import com.horstmann.violet.product.diagram.abstracts.edge.IEdge;
 import com.horstmann.violet.product.diagram.abstracts.node.INode;
+import com.horstmann.violet.workspace.editorpart.enums.Direction;
 
 /**
  * Defines the editor behaviour (an editor is something embedding an IGraph)
@@ -26,7 +27,6 @@ public interface IEditorPart
      * Removes the selected node or edges.
      */
     public abstract void removeSelected();
-
 
     /**
      * @return currently selected node list
@@ -91,7 +91,12 @@ public interface IEditorPart
      * @return manager used to declare new editor behaviors and how to send events between behaviors
      */
     public IEditorPartBehaviorManager getBehaviorManager();
-    
-   
+
+    /**
+     * Align selected elements
+     */
+    public void align(Direction direction);
+
+
 
 }
